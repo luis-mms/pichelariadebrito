@@ -67,14 +67,15 @@
   --muted: #66666c;
   --line: #e8e8ea;
   --red: #c8201e;
+  --red-fill: #c8201e;
   --soft: #f6f6f7;
   --f: "DM Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --s1: 8px; --s2: 16px; --s3: 24px; --s4: 40px; --s5: 64px; --s6: 104px;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #121214; --ink: #f2f2f3; --muted: #a0a0a6; --line: #2a2a2e; --red: #e64545; --soft: #1b1b1e; color-scheme: dark } }
+  --bg: #121214; --ink: #f2f2f3; --muted: #a0a0a6; --line: #2a2a2e; --red: #e64545; --red-fill: #cc2b2b; --soft: #1b1b1e; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #121214; --ink: #f2f2f3; --muted: #a0a0a6; --line: #2a2a2e; --red: #e64545; --soft: #1b1b1e; color-scheme: dark }
+  --bg: #121214; --ink: #f2f2f3; --muted: #a0a0a6; --line: #2a2a2e; --red: #e64545; --red-fill: #cc2b2b; --soft: #1b1b1e; color-scheme: dark }
 
 * { box-sizing: border-box }
 html { scroll-behavior: smooth }
@@ -91,7 +92,7 @@ a { color: inherit }
 .label { font-size: .75rem; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; color: var(--muted) }
 
 /* Logo: drop mark + lowercase wordmark, as on the business card */
-.logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink) }
+.logo { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; text-decoration: none; color: var(--ink) }
 .logo svg { width: 25px; height: 36px; flex: none; overflow: hidden }
 /* Logo motion, Apple-style: one spring, interruptible, restrained.
    Load: the drop resolves into place while heat (the red half) rises inside it.
@@ -143,9 +144,9 @@ header nav a:hover { color: var(--ink) }
 @media (max-width: 620px) { header nav { display: none } }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 48px; border-radius: 999px; padding: 0 22px; font: 500 1rem/1 var(--f); text-decoration: none; border: 1px solid var(--line); color: var(--ink); background: var(--bg) }
-.btn.primary { background: var(--red); border-color: var(--red); color: #fff }
+.btn.primary { background: var(--red-fill); border-color: var(--red-fill); color: #fff }
 .btn:hover { border-color: var(--ink) }
-.btn.primary:hover { border-color: var(--red); opacity: .9 }
+.btn.primary:hover { border-color: var(--red-fill); opacity: .9 }
 .btn svg { width: 18px; height: 18px; fill: currentColor; flex: none }
 .ctas { display: flex; flex-wrap: wrap; gap: 12px }
 
@@ -176,14 +177,14 @@ section { padding-block: var(--s5) var(--s6); border-top: 1px solid var(--line) 
 .contact { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s4) }
 .ways { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s3); align-content: start }
 .ways li { display: grid; gap: 4px }
-.ways .val { font-size: 1.4rem; font-weight: 500; letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; justify-self: start }
-.ways .val.small { font-size: 1.05rem }
+.ways .val { display: inline-flex; align-items: center; min-height: 44px; margin-block: -4px; font-size: 1.4rem; font-weight: 500; letter-spacing: -.01em; text-decoration: none; overflow-wrap: anywhere; justify-self: start }
+.ways .val.small { font-size: 1.05rem; margin-block: -8px }
 .ways a.val:hover { color: var(--red) }
 .ways .note { font-size: .88rem; color: var(--muted) }
 .visit { display: grid; gap: var(--s3); align-content: start }
 .grp { display: grid; gap: 4px }
 .visit address { font-style: normal; font-size: 1.05rem; line-height: 1.5; padding-top: 4px }
-.visit .map { color: var(--red); font-weight: 500; text-decoration: none; justify-self: start }
+.visit .map { display: inline-flex; align-items: center; min-height: 44px; margin-block: -8px; color: var(--red); font-weight: 500; text-decoration: none; justify-self: start }
 .visit .ctas { margin-top: var(--s1) }
 .hours { margin: 4px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px var(--s3); font-size: .95rem; font-variant-numeric: tabular-nums }
 .hours dt { color: var(--muted) }
@@ -192,7 +193,7 @@ section { padding-block: var(--s5) var(--s6); border-top: 1px solid var(--line) 
 
 footer { border-top: 1px solid var(--line); padding-block: var(--s4); font-size: .86rem; color: var(--muted) }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s1) var(--s3) }
-footer a { text-decoration: none }
+footer a { display: inline-block; padding-block: 14px; margin-block: -14px; text-decoration: none }
 footer a:hover { color: var(--ink) }
 
 /* Phone: fixed call bar */
