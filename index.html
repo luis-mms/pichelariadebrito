@@ -93,27 +93,31 @@ a { color: inherit }
 /* Logo: drop mark + lowercase wordmark, as on the business card */
 .logo { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink) }
 .logo svg { width: 25px; height: 36px; flex: none; overflow: hidden }
-/* Logo motion: the drop settles like water while its red half flickers up like a flame, clipped to the drop */
-.drop, .flame { transform-box: fill-box }
-.drop { transform-origin: 50% 100% }
-.flame { transform-origin: 100% 100% }
-.logo.play .drop { animation: drop-settle .9s cubic-bezier(.3, .7, .4, 1) }
-.logo.play .flame { animation: flame-lick .9s ease-out }
-@keyframes drop-settle {
-  0% { transform: translateY(-3px) scale(.96, 1.03) }
-  35% { transform: translateY(0) scale(1.05, .94) }
-  60% { transform: scale(.98, 1.02) }
-  80% { transform: scale(1.01, .99) }
-  100% { transform: none }
+/* Logo motion, Apple-style: one spring, interruptible, restrained.
+   Load: the drop resolves into place while heat (the red half) rises inside it.
+   Hover: the drop lifts slightly and the heat rises a touch. Everything stays inside the drop. */
+:root {
+  --spring: cubic-bezier(.32, 1.25, .5, 1);
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
 }
-@keyframes flame-lick {
-  0% { transform: scaleY(.55) }
-  25% { transform: scaleY(1.08) skewX(-3deg) }
-  45% { transform: scaleY(.9) skewX(2deg) }
-  65% { transform: scaleY(1.04) skewX(-1deg) }
-  100% { transform: none }
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { --spring: linear(0, .009, .035 2.1%, .141 4.4%, .723 12.9%, .938 16.7%, 1.017 20%, 1.051, 1.06 24.4%, 1.051 27.6%, 1.017 33.6%, .995 38.4%, .989 44%, .997 55.6%, 1.001 66.8%, 1) }
 }
-@media (prefers-reduced-motion: reduce) { .logo.play .drop, .logo.play .flame { animation: none } }
+.drop, .flame, .m-cut { transform-box: fill-box }
+.drop { transform-origin: 50% 100%; transition: transform .6s var(--spring) }
+.flame { transform-origin: 50% 100%; transition: transform .7s var(--spring) }
+.drop { animation: drop-in .8s var(--spring) backwards .1s }
+.flame { animation: heat-rise .9s var(--ease-out) backwards .25s }
+.m-cut { transform-origin: 50% 100%; animation: cut-draw .6s var(--ease-out) backwards .45s }
+.logo:hover .drop, .logo:focus-visible .drop { transform: scale(1.035) }
+.logo:hover .flame, .logo:focus-visible .flame { transform: scaleY(1.12) }
+@keyframes drop-in { from { transform: scale(.88); opacity: 0 } }
+@keyframes heat-rise { from { transform: scaleY(0) } }
+@keyframes cut-draw { from { transform: scaleY(0); opacity: 0 } }
+@media (prefers-reduced-motion: reduce) {
+  .drop, .flame, .m-cut { animation: none; transition: none }
+  .logo:hover .drop, .logo:hover .flame { transform: none }
+}
 .m-body { fill: var(--ink) }
 .m-red { fill: var(--red) }
 .m-cut { stroke: var(--bg); stroke-width: 1.4; stroke-linecap: round }
@@ -293,15 +297,5 @@ footer a:hover { color: var(--ink) }
   <a class="btn primary" href="tel:+351253571516"><svg><use href="#i-phone"/></svg>Ligar</a>
   <a class="btn" href="https://wa.me/351965096313" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>
 </div>
-<script>
-(() => {
-  const logo = document.querySelector(".logo");
-  if (!logo) return;
-  const play = () => { logo.classList.remove("play"); void logo.offsetWidth; logo.classList.add("play"); };
-  logo.addEventListener("animationend", e => { if (e.animationName === "drop-settle") logo.classList.remove("play"); });
-  logo.addEventListener("mouseenter", play);
-  play();
-})();
-</script>
 </body>
 </html>
