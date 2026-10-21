@@ -109,14 +109,24 @@ a { color: inherit }
 .drop { animation: drop-in .8s var(--spring) backwards .1s }
 .flame { animation: heat-rise .9s var(--ease-out) backwards .25s }
 .m-cut { transform-origin: 50% 100%; animation: cut-draw .6s var(--ease-out) backwards .45s }
-.logo:hover .drop, .logo:focus-visible .drop { transform: scale(1.035) }
-.logo:hover .flame, .logo:focus-visible .flame { transform: scaleY(1.12) }
+/* Hover only where a real pointer exists; touch gets press feedback instead of a sticky hover */
+@media (hover: hover) and (pointer: fine) {
+  .logo:hover .drop { transform: scale(1.035) }
+  .logo:hover .flame { transform: scaleY(1.12) }
+}
+.logo:focus-visible .drop { transform: scale(1.035) }
+.logo:focus-visible .flame { transform: scaleY(1.12) }
+@media (hover: none) {
+  .logo { -webkit-tap-highlight-color: transparent }
+  .logo:active .drop { transform: scale(.94); transition-duration: .15s }
+  .logo:active .flame { transform: scaleY(1.12); transition-duration: .15s }
+}
 @keyframes drop-in { from { transform: scale(.88); opacity: 0 } }
 @keyframes heat-rise { from { transform: scaleY(0) } }
 @keyframes cut-draw { from { transform: scaleY(0); opacity: 0 } }
 @media (prefers-reduced-motion: reduce) {
   .drop, .flame, .m-cut { animation: none; transition: none }
-  .logo:hover .drop, .logo:hover .flame { transform: none }
+  .logo:hover .drop, .logo:hover .flame, .logo:active .drop, .logo:active .flame { transform: none }
 }
 .m-body { fill: var(--ink) }
 .m-red { fill: var(--red) }
