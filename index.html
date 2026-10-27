@@ -204,7 +204,18 @@ footer a:hover { color: var(--ink) }
   .callbar { display: flex; gap: var(--s1); position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: var(--bg); border-top: 1px solid var(--line);
     padding: 10px max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)) }
   .callbar .btn { flex: 1 }
+  @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    .callbar { background: color-mix(in srgb, var(--bg) 86%, transparent); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px) }
+  }
+  /* The bar waits until the hero buttons leave the screen: springs in, exits faster */
+  .js .callbar { transform: translateY(calc(100% + 8px)); opacity: 0; visibility: hidden;
+    transition: transform .25s cubic-bezier(.4, 0, 1, 1), opacity .2s ease-in, visibility 0s .25s }
+  .js .callbar.show { transform: none; opacity: 1; visibility: visible;
+    transition: transform .5s var(--spring), opacity .25s var(--ease-out), visibility 0s }
   footer { padding-bottom: 100px }
+}
+@media (max-width: 620px) and (prefers-reduced-motion: reduce) {
+  .js .callbar, .js .callbar.show { transform: none }
 }
 </style>
 </head>
@@ -308,5 +319,15 @@ footer a:hover { color: var(--ink) }
   <a class="btn primary" href="tel:+351253571516"><svg><use href="#i-phone"/></svg>Ligar</a>
   <a class="btn" href="https://wa.me/351965096313" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>
 </div>
+<script>
+(() => {
+  const bar = document.querySelector(".callbar"), cta = document.querySelector(".hero .ctas");
+  if (!bar || !cta || !("IntersectionObserver" in window)) return;
+  document.documentElement.classList.add("js");
+  const set = show => { bar.classList.toggle("show", show); bar.inert = !show; bar.setAttribute("aria-hidden", String(!show)); };
+  set(false);
+  new IntersectionObserver(([e]) => set(!e.isIntersecting && e.boundingClientRect.top < 0)).observe(cta);
+})();
+</script>
 </body>
 </html>
