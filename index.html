@@ -207,15 +207,13 @@ footer a:hover { color: var(--ink) }
   @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
     .callbar { background: color-mix(in srgb, var(--bg) 86%, transparent); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px) }
   }
-  /* The bar waits until the hero buttons leave the screen: springs in, exits faster */
-  .js .callbar { transform: translateY(calc(100% + 8px)); opacity: 0; visibility: hidden;
-    transition: transform .25s cubic-bezier(.4, 0, 1, 1), opacity .2s ease-in, visibility 0s .25s }
-  .js .callbar.show { transform: none; opacity: 1; visibility: visible;
-    transition: transform .5s var(--spring), opacity .25s var(--ease-out), visibility 0s }
+  /* Scroll-linked handoff: the bar rises exactly as the hero buttons leave the screen (--p: 0 to 1) */
+  .js .callbar { --p: 0; transform: translateY(calc((1 - var(--p)) * (100% + 12px))); opacity: min(1, calc(var(--p) * 1.6)); will-change: transform }
+  .js .callbar.off { visibility: hidden }
   footer { padding-bottom: 100px }
 }
 @media (max-width: 620px) and (prefers-reduced-motion: reduce) {
-  .js .callbar, .js .callbar.show { transform: none }
+  .js .callbar { transform: none; transition: opacity .25s ease }
 }
 </style>
 </head>
@@ -322,11 +320,27 @@ footer a:hover { color: var(--ink) }
 <script>
 (() => {
   const bar = document.querySelector(".callbar"), cta = document.querySelector(".hero .ctas");
-  if (!bar || !cta || !("IntersectionObserver" in window)) return;
+  if (!bar || !cta) return;
   document.documentElement.classList.add("js");
-  const set = show => { bar.classList.toggle("show", show); bar.inert = !show; bar.setAttribute("aria-hidden", String(!show)); };
-  set(false);
-  new IntersectionObserver(([e]) => set(!e.isIntersecting && e.boundingClientRect.top < 0)).observe(cta);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  let last = -1, ticking = false;
+  const update = () => {
+    ticking = false;
+    const r = cta.getBoundingClientRect();
+    let p = Math.min(1, Math.max(0, -r.top / Math.max(r.height, 1)));
+    p = reduce.matches ? (p > .5 ? 1 : 0) : ease(p);
+    if (p > .995) p = 1;
+    if (Math.abs(p - last) < .001) return;
+    last = p;
+    bar.style.setProperty("--p", p.toFixed(3));
+    const off = p === 0;
+    bar.classList.toggle("off", off); bar.inert = off; bar.setAttribute("aria-hidden", String(off));
+  };
+  const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(update); } };
+  addEventListener("scroll", onScroll, { passive: true });
+  addEventListener("resize", onScroll);
+  update();
 })();
 </script>
 </body>
